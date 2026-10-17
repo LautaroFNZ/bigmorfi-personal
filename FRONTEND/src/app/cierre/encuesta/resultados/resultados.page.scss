@@ -1,0 +1,147 @@
+// MÓDULO 4 - Punto 20 - Resultados de las encuestas.
+
+.bm-resultados {
+  gap: var(--bm-spacing-md);
+}
+
+// ---- Pestañas -------------------------------------------------------------
+
+.bm-resultados__tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--bm-radius-md);
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.bm-resultados__tab {
+  min-height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--bm-color-text-muted);
+  font-family: var(--bm-font-body);
+  font-size: var(--bm-font-size-sm);
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--bm-duration-base) var(--bm-ease-standard),
+    color var(--bm-duration-base) var(--bm-ease-standard);
+
+  &--activa {
+    background: var(--bm-color-primary);
+    color: var(--bm-color-primary-contrast);
+  }
+}
+
+// ---- Tarjeta del gráfico --------------------------------------------------
+
+.bm-resultados__tarjeta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+  padding: var(--bm-spacing-md);
+  border-radius: var(--bm-radius-md);
+  background: rgba(42, 30, 20, 0.95);
+  box-shadow: var(--bm-shadow-md);
+  touch-action: pan-y; // deja scrollear vertical; el deslizar horizontal lo manejamos nosotros
+}
+
+.bm-resultados__contenido {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-sm);
+}
+
+.bm-resultados__titulo {
+  margin: 0;
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-lg);
+  line-height: 1.15;
+  color: var(--bm-color-text-light);
+}
+
+.bm-resultados__sub {
+  margin: 0;
+  font-size: var(--bm-font-size-sm);
+  color: var(--bm-color-text-muted);
+}
+
+.bm-resultados__grafico {
+  height: 280px;
+
+  &--bajo {
+    height: 230px;
+  }
+}
+
+.bm-resultados__leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--bm-spacing-sm) var(--bm-spacing-md);
+  font-size: var(--bm-font-size-sm);
+  font-weight: 600;
+  color: var(--bm-color-text-light);
+
+  i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+    border-radius: 3px;
+  }
+}
+
+.bm-resultados__destacado {
+  margin: 0;
+  font-family: var(--bm-font-heading);
+  font-size: clamp(2rem, 1.5rem + 3vw, 2.4rem);
+  line-height: 1;
+  color: var(--bm-color-primary);
+
+  span {
+    font-family: var(--bm-font-body);
+    font-size: var(--bm-font-size-sm);
+    font-weight: 600;
+    color: var(--bm-color-text-muted);
+  }
+}
+
+// ---- Pie: total y puntitos ------------------------------------------------
+
+.bm-resultados__total {
+  margin: 0;
+  text-align: center;
+  font-size: var(--bm-font-size-sm);
+  color: var(--bm-color-text-muted);
+
+  strong {
+    color: var(--bm-color-text-light);
+  }
+}
+
+.bm-resultados__puntos {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.bm-resultados__punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(245, 164, 0, 0.3);
+  transition:
+    width var(--bm-duration-base) var(--bm-ease-standard),
+    background-color var(--bm-duration-base) var(--bm-ease-standard);
+
+  &--activo {
+    width: 20px;
+    background: var(--bm-color-primary);
+  }
+}

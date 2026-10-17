@@ -1,0 +1,48 @@
+<!-- MÓDULO 4 - Punto 22 - Pagos (mozo). Ver comentario en el .ts -->
+<app-header-marca titulo="Pagos" backHref="/home"></app-header-marca>
+
+<ion-content class="bm-fondo bm-fondo--alta">
+  <div class="bm-screen bm-pagos">
+    <section class="bm-section">
+      <h2 class="bm-section__title">Esperando confirmación ({{ porConfirmar().length }})</h2>
+      @for (c of porConfirmar(); track c.mesaNumero) {
+        <div class="bm-card bm-pagos__mesa bm-fade-in">
+          <div class="bm-pagos__cabecera">
+            <span class="bm-pagos__numero">Mesa {{ c.mesaNumero }}</span>
+            <span class="bm-pagos__etiqueta">{{ haceCuanto(c) }}</span>
+          </div>
+          <div class="bm-pagos__dato"><span>Total</span><strong>{{ total(c) }}</strong></div>
+          <div class="bm-pagos__dato"><span>Propina</span><span>{{ propina(c) }}</span></div>
+          <div class="bm-pagos__dato">
+            <span>Descuento</span>
+            <span>{{ c.codigo ? c.codigo.porcentaje + '% · ' + c.codigo.codigo : 'Sin descuento' }}</span>
+          </div>
+          <ion-button
+            expand="block"
+            color="success"
+            [disabled]="confirmando() === c.mesaNumero"
+            (click)="confirmar(c)"
+          >
+            Confirmar pago y liberar mesa
+          </ion-button>
+        </div>
+      } @empty {
+        <p class="bm-caption bm-pagos__vacio">No hay pagos para confirmar.</p>
+      }
+    </section>
+
+    <section class="bm-section">
+      <h2 class="bm-section__title">Cuentas pedidas, sin pagar ({{ sinPagar().length }})</h2>
+      @for (c of sinPagar(); track c.mesaNumero) {
+        <div class="bm-card bm-pagos__mesa bm-pagos__mesa--espera">
+          <div class="bm-pagos__cabecera">
+            <span class="bm-pagos__numero">Mesa {{ c.mesaNumero }}</span>
+            <span class="bm-pagos__etiqueta">{{ c.propina ? 'Por pagar' : 'Eligiendo propina' }}</span>
+          </div>
+        </div>
+      } @empty {
+        <p class="bm-caption bm-pagos__vacio">Ninguna mesa pidió la cuenta.</p>
+      }
+    </section>
+  </div>
+</ion-content>

@@ -1,0 +1,138 @@
+<!-- MÓDULO 4 - Punto 15 - Ahorcado. Ver comentario en el .ts -->
+<app-header-marca titulo="Ahorcado" [subtitulo]="subtitulo()" [backHref]="rutaVolver"></app-header-marca>
+
+<ion-content class="bm-fondo bm-fondo--alta">
+  <div class="bm-screen bm-ahorcado">
+    @switch (fase()) {
+      <!-- ================= INTRO ================= -->
+      @case ('intro') {
+        <div class="bm-hero bm-ahorcado__intro">
+          <span class="bm-eyebrow">{{ conPremio() ? 'Partida con premio' : 'Partida libre' }}</span>
+          <h1 class="bm-heading--lg bm-reveal">{{ info.nombre }}</h1>
+          @if (conPremio()) {
+            <span class="bm-ahorcado__premio bm-pop">{{ info.porcentaje }}% OFF</span>
+          }
+          <p class="bm-caption">
+            Adiviná la comida letra por letra. La categoría te sirve de pista.
+            Tenés {{ totalVidas }} vidas: cada letra que no está te cuesta una.
+            @if (conPremio()) {
+              <br /><strong>Tenés un solo intento por el descuento.</strong>
+            }
+          </p>
+        </div>
+
+        @if (aviso()) {
+          <p class="bm-ahorcado__aviso bm-fade-in">{{ aviso() }}</p>
+        }
+
+        <div class="bm-screen__actions">
+          <ion-button expand="block" [disabled]="cargando()" (click)="empezar()">
+            {{ conPremio() ? 'Jugar por el descuento' : 'Empezar' }}
+          </ion-button>
+        </div>
+      }
+
+      <!-- ================= RESULTADO ================= -->
+      @case ('resultado') {
+        <app-resultado-juego
+          [gano]="gano()"
+          [conPremio]="partidaFueConPremio()"
+          [codigo]="codigo()"
+          [detalle]="detalleResultado()"
+          (jugarDeNuevo)="jugarDeNuevo()"
+        ></app-resultado-juego>
+      }
+
+      <!-- ================= JUGANDO / REVELANDO ================= -->
+      @default {
+        <div class="bm-ahorcado__vidas-fila">
+          <span class="bm-eyebrow">Vidas</span>
+          <div class="bm-ahorcado__vidas" [attr.aria-label]="vidasRestantes() + ' vidas'">
+            @for (i of indicesVidas; track i) {
+              <span class="bm-ahorcado__vida" [class.bm-ahorcado__vida--perdida]="i >= vidasRestantes()"></span>
+            }
+          </div>
+        </div>
+
+        <!-- Dibujo: cada error enciende una parte; las que faltan se ven punteadas. -->
+        <div class="bm-ahorcado__dibujo" [class.bm-shake]="sacudir()">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <path class="bm-ahorcado__horca" d="M15 112h60M30 112V10h50v14" />
+            <circle class="bm-ahorcado__parte" [class.bm-ahorcado__parte--on]="errores() > 0" cx="80" cy="34" r="10" />
+            <path class="bm-ahorcado__parte" [class.bm-ahorcado__parte--on]="errores() > 1" d="M80 44v30" />
+            <path class="bm-ahorcado__parte" [class.bm-ahorcado__parte--on]="errores() > 2" d="M80 54l-14 12" />
+            <path class="bm-ahorcado__parte" [class.bm-ahorcado__parte--on]="errores() > 3" d="M80 54l14 12" />
+            <path class="bm-ahorcado__parte" [class.bm-ahorcado__parte--on]="errores() > 4" d="M80 74l-12 20" />
+            <path class="bm-ahorcado__parte" [class.bm-ahorcado__parte--on]="errores() > 5" d="M80 74l12 20" />
+          </svg>
+        </div>
+
+        <div
+          class="bm-ahorcado__palabra"
+          [class.bm-ahorcado__palabra--gano]="fase() === 'revelando' && gano()"
+          [class.bm-ahorcado__palabra--perdio]="fase() === 'revelando' && !gano()"
+        >
+          @for (c of casillas(); track $index) {
+            @if (c.espacio) {
+              <span class="bm-ahorcado__espacio"></span>
+            } @else {
+              <span class="bm-ahorcado__casilla">{{ destapada(c) ? c.original : '' }}</span>
+            }
+          }
+        </div>
+        <p class="bm-ahorcado__pista">Categoría: <strong>{{ categoria() }}</strong></p>
+
+        <!-- Arriesgar palabra: el botón se convierte en el campo (opción A). -->
+        @if (arriesgando()) {
+          <form class="bm-ahorcado__arriesgar bm-fade-in" (submit)="$event.preventDefault(); enviarArriesgado()">
+            <div class="bm-ahorcado__arriesgar-fila">
+              <input
+                #campoArriesgar
+                class="bm-ahorcado__arriesgar-input"
+                type="text"
+                placeholder="Escribí la palabra"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                enterkeyhint="send"
+                maxlength="30"
+                [value]="textoArriesgado()"
+                (input)="escribirArriesgado($any($event.target).value)"
+              />
+              <button type="submit" class="bm-ahorcado__arriesgar-enviar" [disabled]="!textoArriesgado().trim()">Enviar</button>
+            </div>
+            <p class="bm-ahorcado__arriesgar-nota">
+              {{ avisoCosto() }} ·
+              <button type="button" class="bm-ahorcado__arriesgar-cancelar" (click)="cerrarArriesgar()">Cancelar</button>
+            </p>
+          </form>
+        } @else {
+          <button
+            type="button"
+            class="bm-ahorcado__arriesgar-btn"
+            [disabled]="fase() !== 'jugando'"
+            (click)="abrirArriesgar()"
+          >
+            Arriesgar palabra
+          </button>
+        }
+
+        <div class="bm-ahorcado__teclado">
+          @for (letra of teclado; track letra) {
+            <button
+              type="button"
+              class="bm-ahorcado__tecla"
+              [class.bm-ahorcado__tecla--acierto]="estadoTecla(letra) === 'acierto'"
+              [class.bm-ahorcado__tecla--error]="estadoTecla(letra) === 'error'"
+              [disabled]="estadoTecla(letra) !== 'libre' || fase() !== 'jugando'"
+              (click)="elegir(letra)"
+            >
+              {{ letra }}
+            </button>
+          }
+        </div>
+      }
+    }
+  </div>
+</ion-content>

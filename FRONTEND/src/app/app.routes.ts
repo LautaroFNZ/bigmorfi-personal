@@ -143,8 +143,28 @@ export const routes: Routes = [
     loadComponent: () => import('./cierre/encuesta/encuesta.page').then((m) => m.EncuestaPage),
   },
   {
+    // Punto 20 - resultados de las encuestas: torta, barras y línea (un gráfico por pantalla)
+    path: 'cierre/encuesta/resultados',
+    loadComponent: () => import('./cierre/encuesta/resultados/resultados.page').then((m) => m.ResultadosPage),
+  },
+  {
     // Punto 21 - cuenta + QR de propina
     path: 'cierre/cuenta',
     loadComponent: () => import('./cierre/cuenta/cuenta.page').then((m) => m.CuentaPage),
   },
+  {
+    // Punto 22 - el mozo confirma el pago y se libera la mesa
+    path: 'cierre/pagos',
+    loadComponent: () => import('./cierre/pagos/pagos.page').then((m) => m.PagosPage),
+  },
+  {
+    // Punto 15 - Juegos: la sección y cada juego (ver cierre/juegos/juegos.routes.ts)
+    path: 'cierre/juegos',
+    loadChildren: () => import('./cierre/juegos/juegos.routes').then((m) => m.JUEGOS_ROUTES),
+  },
+  {
+    path: '**',
+    redirectTo: 'splash',
+  },
+
 ];

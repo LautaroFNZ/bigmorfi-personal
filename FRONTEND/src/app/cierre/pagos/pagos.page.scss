@@ -1,0 +1,62 @@
+// MÓDULO 4 - Punto 22 - Pagos (mozo).
+
+.bm-pagos {
+  gap: var(--bm-spacing-lg);
+}
+
+.bm-pagos__mesa {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-xs);
+  padding: var(--bm-spacing-md);
+
+  ion-button {
+    margin: var(--bm-spacing-xs) 0 0;
+  }
+
+  &--espera {
+    opacity: 0.75;
+  }
+}
+
+.bm-pagos__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bm-pagos__numero {
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-lg);
+  color: var(--bm-color-text-light);
+}
+
+.bm-pagos__etiqueta {
+  padding: 3px 10px;
+  border-radius: var(--bm-radius-full);
+  background: rgba(245, 164, 0, 0.2);
+  color: var(--bm-color-primary);
+  font-size: var(--bm-font-size-xs);
+  font-weight: 700;
+}
+
+.bm-pagos__dato {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--bm-spacing-md);
+  font-size: var(--bm-font-size-sm);
+  color: var(--bm-color-text-light);
+
+  span:first-child {
+    color: var(--bm-color-text-muted);
+  }
+
+  strong {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.bm-pagos__vacio {
+  margin: 0;
+  text-align: center;
+}

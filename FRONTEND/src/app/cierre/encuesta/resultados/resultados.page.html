@@ -1,0 +1,76 @@
+<!-- MÓDULO 4 - Punto 20 - Resultados de las encuestas. Ver comentario en el .ts -->
+<app-header-marca titulo="Resultados" backHref="/home"></app-header-marca>
+
+<ion-content class="bm-fondo bm-fondo--alta">
+  <div class="bm-screen bm-resultados">
+    <div class="bm-resultados__tabs" role="tablist">
+      @for (p of pestanas; track p.id; let i = $index) {
+        <button
+          type="button"
+          role="tab"
+          class="bm-resultados__tab"
+          [attr.aria-selected]="activa() === i"
+          [class.bm-resultados__tab--activa]="activa() === i"
+          (click)="irA(i)"
+        >
+          {{ p.texto }}
+        </button>
+      }
+    </div>
+
+    @if (resumen(); as r) {
+      <!-- Un gráfico por pantalla: solo se dibuja el de la pestaña activa. -->
+      <section
+        class="bm-resultados__tarjeta"
+        role="tabpanel"
+        (touchstart)="empezarToque($event)"
+        (touchend)="terminarToque($event)"
+      >
+        @switch (activa()) {
+          @case (0) {
+            <div class="bm-resultados__contenido bm-fade-in">
+              <h2 class="bm-resultados__titulo">¿Volverían a Big Morfi?</h2>
+              <p class="bm-resultados__sub">Respuestas de todos los clientes</p>
+              @if (configTorta(); as cfg) {
+                <app-grafico class="bm-resultados__grafico" [config]="cfg" />
+              }
+              <div class="bm-resultados__leyenda">
+                @for (l of leyendaVolveria(); track l.texto) {
+                  <span><i [style.background]="l.color"></i>{{ l.texto }} {{ l.porcentaje }}%</span>
+                }
+              </div>
+            </div>
+          }
+          @case (1) {
+            <div class="bm-resultados__contenido bm-fade-in">
+              <h2 class="bm-resultados__titulo">Lo que más les gustó</h2>
+              <p class="bm-resultados__sub">Cada cliente puede elegir más de una opción</p>
+              @if (configBarras(); as cfg) {
+                <app-grafico class="bm-resultados__grafico" [config]="cfg" />
+              }
+            </div>
+          }
+          @case (2) {
+            <div class="bm-resultados__contenido bm-fade-in">
+              <h2 class="bm-resultados__titulo">Calificación de los últimos 7 días</h2>
+              <p class="bm-resultados__sub">Promedio de estrellas (1 a 5)</p>
+              <p class="bm-resultados__destacado">
+                {{ promedioSemanaTexto() }} <span>promedio de la semana</span>
+              </p>
+              @if (configLinea(); as cfg) {
+                <app-grafico class="bm-resultados__grafico bm-resultados__grafico--bajo" [config]="cfg" />
+              }
+            </div>
+          }
+        }
+      </section>
+
+      <p class="bm-resultados__total">Basado en <strong>{{ r.total }} encuestas</strong></p>
+      <div class="bm-resultados__puntos" aria-hidden="true">
+        @for (p of pestanas; track p.id; let i = $index) {
+          <span class="bm-resultados__punto" [class.bm-resultados__punto--activo]="activa() === i"></span>
+        }
+      </div>
+    }
+  </div>
+</ion-content>

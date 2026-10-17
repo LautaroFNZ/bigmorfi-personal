@@ -1,68 +1,171 @@
-<!-- MOCKUP VISUAL - Módulo 4, Punto 20. Ver comentario en el .ts -->
+<!-- MÓDULO 4 - Punto 20 - Encuesta de satisfacción. Ver comentario en el .ts -->
 <app-header-marca titulo="Encuesta" backHref="/home"></app-header-marca>
 
 <ion-content class="bm-fondo bm-fondo--alta">
   <div class="bm-screen bm-encuesta">
-    <!-- ---- Formulario ---- -->
-    <ng-container *ngIf="!enviada">
-      <header class="bm-encuesta__intro">
-        <h1 class="bm-heading--lg bm-reveal">¿Cómo estuvo tu experiencia?</h1>
-        <p class="bm-caption bm-fade-in">Tu opinión nos ayuda a mejorar cada día.</p>
-      </header>
-
-      <div class="bm-stack bm-stagger bm-stagger--cards">
-        <div class="bm-card" *ngFor="let pregunta of preguntas">
-          <div class="bm-card__body ion-text-center">
-            <p>{{ pregunta.texto }}</p>
-            <div class="bm-estrellas" role="radiogroup" [attr.aria-label]="pregunta.texto">
-              <button
-                type="button"
-                class="bm-estrella"
-                *ngFor="let n of [1, 2, 3, 4, 5]"
-                [class.bm-estrella--activa]="n <= pregunta.puntaje"
-                [attr.aria-label]="n + ' de 5'"
-                (click)="puntuar(pregunta, n)"
-              >
-                <ion-icon [name]="n <= pregunta.puntaje ? 'star' : 'star-outline'"></ion-icon>
-              </button>
-            </div>
-          </div>
+    @switch (estado()) {
+      <!-- ================= RESPONDIENDO ================= -->
+      @case ('respondiendo') {
+        <div class="bm-encuesta__progreso">
+          <span class="bm-eyebrow">Pregunta {{ indice() + 1 }} de {{ pasos.length }}</span>
+          <span class="bm-encuesta__porcentaje">{{ progreso() }}%</span>
         </div>
-      </div>
-
-      <ion-textarea
-        [(ngModel)]="comentario"
-        placeholder="¿Algo más que quieras contarnos? (opcional)"
-        [autoGrow]="true"
-        class="bm-textarea"
-      ></ion-textarea>
-
-      <ion-button expand="block" [disabled]="!puedeEnviar" (click)="enviar()">
-        Enviar encuesta
-      </ion-button>
-    </ng-container>
-
-    <!-- ---- Resultados / estadísticas (post-envío o "ver encuestas") ---- -->
-    <div class="bm-hero" *ngIf="enviada">
-      <app-check-animado></app-check-animado>
-      <h2 class="bm-heading--md bm-reveal bm-encuesta__gracias">¡Gracias por tu opinión!</h2>
-    </div>
-
-    <section class="bm-section bm-fade-in">
-      <h2 class="bm-section__title ion-text-center">Cómo nos calificaron en general</h2>
-      <div class="bm-card">
-        <div class="bm-card__body">
-          <div class="bm-barra" *ngFor="let stat of estadisticas">
-            <div class="bm-barra__header">
-              <span>{{ stat.categoria }}</span>
-              <span>{{ stat.porcentaje }}%</span>
-            </div>
-            <div class="bm-barra__pista">
-              <div class="bm-barra__relleno" [style.transform]="'scaleX(' + stat.porcentaje / 100 + ')'"></div>
-            </div>
-          </div>
+        <div class="bm-encuesta__barra" aria-hidden="true">
+          <div class="bm-encuesta__barra-relleno" [style.transform]="'scaleX(' + progreso() / 100 + ')'"></div>
         </div>
-      </div>
-    </section>
+
+        <!-- Se recrea en cada paso para que entre con animación. -->
+        @for (p of [paso()]; track indice()) {
+          <div class="bm-encuesta__paso bm-slide-in-right" [class.bm-shake]="sacudir()">
+            <h1 class="bm-encuesta__pregunta">{{ p.pregunta }}</h1>
+            <p class="bm-encuesta__ayuda">{{ p.ayuda }}</p>
+
+            @switch (p.tipo) {
+              <!-- 1. Estrellas -->
+              @case ('estrellas') {
+                <div class="bm-estrellas" role="radiogroup" [attr.aria-label]="p.pregunta">
+                  @for (n of estrellas; track n) {
+                    <button
+                      type="button"
+                      class="bm-estrella"
+                      role="radio"
+                      [attr.aria-checked]="calificacion() === n"
+                      [attr.aria-label]="n + ' de 5'"
+                      [class.bm-estrella--activa]="n <= calificacion()"
+                      (click)="puntuar(n)"
+                    >
+                      <ion-icon [name]="n <= calificacion() ? 'star' : 'star-outline'"></ion-icon>
+                    </button>
+                  }
+                </div>
+              }
+
+              <!-- 2. Deslizador -->
+              @case ('deslizador') {
+                <div class="bm-card bm-encuesta__control">
+                  <span class="bm-encuesta__valor">{{ atencionMozo() }}</span>
+                  <ion-range
+                    class="bm-encuesta__range"
+                    [min]="0"
+                    [max]="10"
+                    [step]="1"
+                    [snaps]="true"
+                    [value]="atencionMozo()"
+                    aria-label="Atención del mozo, de 0 a 10"
+                    (ionInput)="cambiarAtencion($event.detail.value)"
+                  ></ion-range>
+                  <div class="bm-encuesta__extremos">
+                    <span>0 · Muy mala</span>
+                    <span>10 · Excelente</span>
+                  </div>
+                </div>
+              }
+
+              <!-- 3. Opciones múltiples -->
+              @case ('multiple') {
+                <div class="bm-encuesta__opciones" role="group" [attr.aria-label]="p.pregunta">
+                  @for (o of opcionesGusto; track o.valor) {
+                    <button
+                      type="button"
+                      class="bm-encuesta__opcion"
+                      role="checkbox"
+                      [attr.aria-checked]="gustos().includes(o.valor)"
+                      [class.bm-encuesta__opcion--activa]="gustos().includes(o.valor)"
+                      (click)="alternarGusto(o.valor)"
+                    >
+                      <span class="bm-encuesta__casilla">
+                        @if (gustos().includes(o.valor)) {
+                          <ion-icon name="checkmark"></ion-icon>
+                        }
+                      </span>
+                      {{ o.texto }}
+                    </button>
+                  }
+                </div>
+              }
+
+              <!-- 4. Opción única -->
+              @case ('unica') {
+                <div class="bm-encuesta__segmento" role="radiogroup" [attr.aria-label]="p.pregunta">
+                  @for (o of opcionesVolveria; track o.valor) {
+                    <button
+                      type="button"
+                      role="radio"
+                      class="bm-encuesta__segmento-btn"
+                      [attr.aria-checked]="volveria() === o.valor"
+                      [class.bm-encuesta__segmento-btn--activo]="volveria() === o.valor"
+                      (click)="elegirVolveria(o.valor)"
+                    >
+                      {{ o.texto }}
+                    </button>
+                  }
+                </div>
+              }
+
+              <!-- 5. Interruptor -->
+              @case ('interruptor') {
+                <div class="bm-card bm-encuesta__control bm-encuesta__interruptor">
+                  <span>{{ recomendaria() ? '¡Sí, los recomendaría!' : 'Por ahora no' }}</span>
+                  <ion-toggle
+                    [checked]="recomendaria()"
+                    aria-label="Nos recomendarías a un amigo"
+                    (ionChange)="cambiarRecomendaria($event.detail.checked)"
+                  ></ion-toggle>
+                </div>
+              }
+
+              <!-- 6. Texto libre -->
+              @case ('texto') {
+                <ion-textarea
+                  class="bm-textarea"
+                  placeholder="Contanos lo que quieras (opcional)"
+                  [autoGrow]="true"
+                  [maxlength]="300"
+                  [counter]="true"
+                  [value]="comentario()"
+                  (ionInput)="cambiarComentario($event.detail.value)"
+                ></ion-textarea>
+              }
+            }
+          </div>
+        }
+
+        @if (error()) {
+          <p class="bm-encuesta__error bm-fade-in">{{ error() }}</p>
+        }
+
+        <div class="bm-encuesta__acciones">
+          @if (indice() > 0) {
+            <ion-button class="bm-encuesta__atras" fill="outline" (click)="atras()">Atrás</ion-button>
+          }
+          <ion-button class="bm-encuesta__siguiente" [disabled]="enviando()" (click)="siguiente()">
+            {{ esUltimo() ? (enviando() ? 'Enviando...' : 'Enviar encuesta') : 'Siguiente' }}
+          </ion-button>
+        </div>
+      }
+
+      <!-- ================= ENVIADA ================= -->
+      @case ('enviada') {
+        <div class="bm-hero bm-encuesta__fin">
+          <app-check-animado></app-check-animado>
+          <h2 class="bm-heading--md bm-reveal bm-encuesta__gracias">¡Gracias por tu opinión!</h2>
+          <p class="bm-caption">Tu respuesta ya forma parte de los resultados.</p>
+        </div>
+        <div class="bm-screen__actions">
+          <ion-button expand="block" routerLink="/cierre/encuesta/resultados">Ver resultados</ion-button>
+        </div>
+      }
+
+      <!-- ================= YA RESPONDIDA ================= -->
+      @case ('ya_respondida') {
+        <div class="bm-hero bm-encuesta__fin">
+          <h2 class="bm-heading--md">Ya completaste la encuesta de esta visita</h2>
+          <p class="bm-caption">Se puede responder una vez por estadía. ¡Gracias por participar!</p>
+        </div>
+        <div class="bm-screen__actions">
+          <ion-button expand="block" routerLink="/cierre/encuesta/resultados">Ver resultados</ion-button>
+        </div>
+      }
+    }
   </div>
 </ion-content>

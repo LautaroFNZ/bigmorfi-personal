@@ -1,0 +1,38 @@
+<div class="bm-resultado">
+  @if (gano()) {
+    <app-check-animado [tamano]="64"></app-check-animado>
+    <h2 class="bm-resultado__titulo bm-reveal">¡Lo lograste!</h2>
+  } @else {
+    <h2 class="bm-resultado__titulo bm-resultado__titulo--perdio bm-reveal">Esta vez no</h2>
+  }
+
+  @if (detalle()) {
+    <p class="bm-resultado__detalle bm-fade-in">{{ detalle() }}</p>
+  }
+
+  @if (gano() && conPremio() && codigo(); as cupon) {
+    <div class="bm-cupon bm-scale-in">
+      <span class="bm-eyebrow bm-cupon__rotulo">Descuento en tu cuenta</span>
+      <span class="bm-cupon__porcentaje">{{ cupon.porcentaje }}% OFF</span>
+      <span class="bm-cupon__codigo">{{ cupon.codigo }}</span>
+    </div>
+
+    <div class="bm-card bm-resultado__vence bm-fade-in">
+      <span class="bm-eyebrow">Vence en</span>
+      <span class="bm-resultado__reloj">{{ tiempoParaVencer() }}</span>
+      <span class="bm-caption">Ingresalo en "Tu cuenta" antes de pagar.</span>
+    </div>
+  } @else if (gano()) {
+    <p class="bm-caption bm-fade-in">Era una partida libre, así que no suma descuento.</p>
+  } @else if (conPremio()) {
+    <p class="bm-caption bm-fade-in">
+      Perdiste tu intento con premio. En 24 h vas a tener otro, con otro juego.
+      Mientras tanto podés jugar libre.
+    </p>
+  }
+
+  <div class="bm-resultado__acciones">
+    <ion-button expand="block" fill="outline" (click)="jugarDeNuevo.emit()">Jugar de nuevo (libre)</ion-button>
+    <ion-button expand="block" fill="clear" [routerLink]="rutaVolver">Volver</ion-button>
+  </div>
+</div>

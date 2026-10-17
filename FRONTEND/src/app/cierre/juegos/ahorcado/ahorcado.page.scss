@@ -1,0 +1,292 @@
+// MÓDULO 4 - Punto 15 - Ahorcado.
+
+.bm-ahorcado {
+  gap: var(--bm-spacing-md);
+}
+
+// ---- Intro ----------------------------------------------------------------
+
+.bm-ahorcado__intro {
+  text-align: center;
+}
+
+.bm-ahorcado__premio {
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-xxl);
+  color: var(--bm-color-primary);
+  line-height: 1;
+}
+
+.bm-ahorcado__aviso {
+  margin: 0;
+  padding: var(--bm-spacing-sm) var(--bm-spacing-md);
+  border-radius: var(--bm-radius-md);
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(245, 164, 0, 0.4);
+  color: var(--bm-color-text-light);
+  font-size: var(--bm-font-size-sm);
+  text-align: center;
+}
+
+// ---- Vidas ----------------------------------------------------------------
+
+.bm-ahorcado__vidas-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bm-ahorcado__vidas {
+  display: flex;
+  gap: 5px;
+}
+
+.bm-ahorcado__vida {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bm-color-primary);
+  transition:
+    background-color var(--bm-duration-base) var(--bm-ease-standard),
+    transform var(--bm-duration-base) var(--bm-ease-spring);
+
+  &--perdida {
+    background: rgba(245, 164, 0, 0.18);
+    transform: scale(0.8);
+  }
+}
+
+// ---- Dibujo ---------------------------------------------------------------
+
+.bm-ahorcado__dibujo {
+  display: flex;
+  justify-content: center;
+
+  svg {
+    width: min(40vw, 150px);
+    height: auto;
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.bm-ahorcado__horca {
+  stroke: var(--bm-color-primary);
+}
+
+// Parte todavía no ganada: punteada y tenue (guía de lo que falta).
+.bm-ahorcado__parte {
+  stroke: rgba(245, 164, 0, 0.18);
+  stroke-dasharray: 5 6;
+  transition: stroke var(--bm-duration-base) var(--bm-ease-standard);
+
+  &--on {
+    stroke: var(--bm-color-danger);
+    stroke-dasharray: none;
+  }
+}
+
+// ---- Palabra --------------------------------------------------------------
+
+.bm-ahorcado__palabra {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.bm-ahorcado__casilla {
+  width: 26px;
+  height: 34px;
+  border-bottom: 3px solid var(--bm-color-primary);
+  text-align: center;
+  font-family: var(--bm-font-heading);
+  font-size: 22px;
+  line-height: 34px;
+  color: var(--bm-color-text-light);
+  transition:
+    color var(--bm-duration-base) var(--bm-ease-standard),
+    border-color var(--bm-duration-base) var(--bm-ease-standard);
+}
+
+.bm-ahorcado__espacio {
+  width: 14px;
+}
+
+.bm-ahorcado__palabra--gano .bm-ahorcado__casilla {
+  color: var(--bm-color-success);
+  border-color: var(--bm-color-success);
+}
+
+.bm-ahorcado__palabra--perdio .bm-ahorcado__casilla {
+  color: var(--bm-color-danger);
+  border-color: var(--bm-color-danger);
+}
+
+.bm-ahorcado__pista {
+  margin: 0;
+  text-align: center;
+  font-size: var(--bm-font-size-sm);
+  color: var(--bm-color-text-muted);
+
+  strong {
+    color: var(--bm-color-text-light);
+  }
+}
+
+// ---- Arriesgar palabra ----------------------------------------------------
+
+// El botón (o el campo, cuando está abierto) se pega abajo, arriba del teclado.
+.bm-ahorcado__arriesgar-btn,
+.bm-ahorcado__arriesgar {
+  margin-top: auto;
+}
+
+.bm-ahorcado__arriesgar-btn {
+  min-height: var(--bm-touch-min);
+  border-radius: var(--bm-radius-lg);
+  border: 2px solid var(--bm-color-primary);
+  background: transparent;
+  color: var(--bm-color-primary);
+  font-family: var(--bm-font-body);
+  font-size: var(--bm-font-size-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--bm-duration-fast) var(--bm-ease-out);
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.bm-ahorcado__arriesgar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-xs);
+  padding: var(--bm-spacing-sm);
+  border-radius: var(--bm-radius-md);
+  border: 1.5px solid var(--bm-color-primary);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.bm-ahorcado__arriesgar-fila {
+  display: flex;
+  gap: var(--bm-spacing-xs);
+}
+
+.bm-ahorcado__arriesgar-input {
+  flex: 1;
+  min-width: 0;
+  height: var(--bm-control-h-sm, 44px);
+  padding: 0 var(--bm-spacing-sm);
+  border-radius: 12px;
+  border: 1px solid rgba(245, 164, 0, 0.4);
+  background: #000;
+  color: var(--bm-color-text-light);
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-md); // 16px: evita el zoom automático de iOS
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  outline: none;
+
+  &:focus {
+    border-color: var(--bm-color-primary);
+  }
+
+  &::placeholder {
+    font-family: var(--bm-font-body);
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--bm-color-text-muted);
+  }
+}
+
+.bm-ahorcado__arriesgar-enviar {
+  padding: 0 var(--bm-spacing-md);
+  border: none;
+  border-radius: 12px;
+  background: var(--bm-color-primary);
+  color: var(--bm-color-primary-contrast);
+  font-family: var(--bm-font-body);
+  font-weight: 700;
+  font-size: var(--bm-font-size-sm);
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.bm-ahorcado__arriesgar-nota {
+  margin: 0;
+  text-align: center;
+  font-size: var(--bm-font-size-xs);
+  color: var(--bm-color-text-muted);
+}
+
+.bm-ahorcado__arriesgar-cancelar {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--bm-color-primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+// ---- Teclado --------------------------------------------------------------
+
+.bm-ahorcado__teclado {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.bm-ahorcado__tecla {
+  height: 42px;
+  border-radius: 9px;
+  border: 1px solid rgba(245, 164, 0, 0.2);
+  background: rgba(58, 42, 28, 0.95);
+  color: var(--bm-color-text-light);
+  font-family: var(--bm-font-body);
+  font-size: var(--bm-font-size-sm);
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--bm-duration-base) var(--bm-ease-standard),
+    transform var(--bm-duration-fast) var(--bm-ease-out);
+
+  &:active:not(:disabled) {
+    transform: scale(0.92);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &--acierto {
+    background: rgba(91, 153, 80, 0.35);
+    border-color: var(--bm-color-success);
+    color: #cfe9c9;
+  }
+
+  &--error {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: transparent;
+    color: rgba(247, 239, 226, 0.25);
+    text-decoration: line-through;
+  }
+}

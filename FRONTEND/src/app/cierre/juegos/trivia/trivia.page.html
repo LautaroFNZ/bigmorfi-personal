@@ -1,0 +1,96 @@
+<!-- MÓDULO 4 - Punto 15 - Trivia gastronómica. Ver comentario en el .ts -->
+<app-header-marca titulo="Trivia" [subtitulo]="subtitulo()" [backHref]="rutaVolver"></app-header-marca>
+
+<ion-content class="bm-fondo bm-fondo--alta">
+  <div class="bm-screen bm-trivia">
+    @switch (fase()) {
+      <!-- ================= INTRO ================= -->
+      @case ('intro') {
+        <div class="bm-hero bm-trivia__intro">
+          <span class="bm-eyebrow">{{ conPremio() ? 'Partida con premio' : 'Partida libre' }}</span>
+          <h1 class="bm-heading--lg bm-reveal">{{ info.nombre }}</h1>
+          @if (conPremio()) {
+            <span class="bm-trivia__premio bm-pop">{{ info.porcentaje }}% OFF</span>
+          }
+          <p class="bm-caption">
+            {{ cantidadPreguntas }} preguntas, {{ segundosPorPregunta }} segundos cada una.
+            Hay que acertar todas.
+            @if (conPremio()) {
+              <br /><strong>Tenés un solo intento por el descuento.</strong>
+            }
+          </p>
+        </div>
+
+        @if (aviso()) {
+          <p class="bm-trivia__aviso bm-fade-in">{{ aviso() }}</p>
+        }
+
+        <div class="bm-screen__actions">
+          <ion-button expand="block" [disabled]="cargando()" (click)="empezar()">
+            {{ conPremio() ? 'Jugar por el descuento' : 'Empezar' }}
+          </ion-button>
+        </div>
+      }
+
+      <!-- ================= JUGANDO ================= -->
+      @case ('jugando') {
+        <div class="bm-trivia__progreso">
+          <span class="bm-eyebrow">Pregunta {{ indice() + 1 }} de {{ cantidadPreguntas }}</span>
+          <div class="bm-trivia__pasos" aria-hidden="true">
+            @for (p of preguntas(); track $index) {
+              <span
+                class="bm-trivia__paso"
+                [class.bm-trivia__paso--ok]="$index < indice()"
+                [class.bm-trivia__paso--actual]="$index === indice()"
+              ></span>
+            }
+          </div>
+        </div>
+
+        <div class="bm-trivia__tiempo" [class.bm-trivia__tiempo--alerta]="tiempoEnAlerta()">
+          <div class="bm-trivia__tiempo-pista">
+            <div class="bm-trivia__tiempo-relleno" [style.transform]="'scaleX(' + fraccionTiempo() + ')'"></div>
+          </div>
+          <span class="bm-trivia__segundos">0:{{ segundosRestantes() < 10 ? '0' : '' }}{{ segundosRestantes() }}</span>
+        </div>
+
+        <div class="bm-card bm-trivia__pregunta" [class.bm-shake]="sacudir()">
+          <p>{{ pregunta().texto }}</p>
+        </div>
+
+        <div class="bm-trivia__opciones" role="radiogroup" [attr.aria-label]="pregunta().texto">
+          @for (opcion of pregunta().opciones; track opcion; let i = $index) {
+            <button
+              type="button"
+              role="radio"
+              class="bm-trivia__opcion"
+              [attr.aria-checked]="elegida() === i"
+              [disabled]="respondida()"
+              [class.bm-trivia__opcion--correcta]="respondida() && i === pregunta().correcta"
+              [class.bm-trivia__opcion--incorrecta]="elegida() === i && i !== pregunta().correcta"
+              (click)="responder(i)"
+            >
+              <span class="bm-trivia__letra">{{ letras[i] }}</span>
+              <span>{{ opcion }}</span>
+            </button>
+          }
+        </div>
+
+        @if (tiempoAgotado()) {
+          <p class="bm-trivia__aviso bm-fade-in">¡Se acabó el tiempo!</p>
+        }
+      }
+
+      <!-- ================= RESULTADO ================= -->
+      @case ('resultado') {
+        <app-resultado-juego
+          [gano]="gano()"
+          [conPremio]="partidaFueConPremio()"
+          [codigo]="codigo()"
+          [detalle]="detalleResultado()"
+          (jugarDeNuevo)="jugarDeNuevo()"
+        ></app-resultado-juego>
+      }
+    }
+  </div>
+</ion-content>

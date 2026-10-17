@@ -1,0 +1,210 @@
+// MÓDULO 4 - Punto 15 - Sección Juegos (opción A).
+
+.bm-juegos {
+  gap: var(--bm-spacing-lg);
+}
+
+.bm-juegos__num {
+  font-variant-numeric: tabular-nums;
+  color: var(--bm-color-text-light);
+}
+
+// ---- Tarjeta principal ----------------------------------------------------
+
+.bm-juegos__hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-sm);
+  padding: var(--bm-spacing-lg);
+  border-radius: var(--bm-radius-lg);
+  border: 2px solid var(--bm-color-primary);
+  background: linear-gradient(160deg, rgba(58, 42, 28, 0.96), rgba(28, 20, 13, 0.96));
+  box-shadow: var(--bm-shadow-lg);
+
+  // Brillo ámbar en la esquina.
+  &::before {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245, 164, 0, 0.35), transparent 70%);
+    pointer-events: none;
+  }
+
+  &--espera {
+    border-color: rgba(245, 164, 0, 0.5);
+  }
+}
+
+.bm-juegos__chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--bm-radius-full);
+  background: var(--bm-color-primary);
+  color: var(--bm-color-primary-contrast);
+  font-size: var(--bm-font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bm-juegos__hero-fila {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--bm-spacing-sm);
+}
+
+.bm-juegos__hero-nombre {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-xs);
+
+  h1 {
+    margin: 0;
+    font-family: var(--bm-font-heading);
+    font-size: var(--bm-font-size-xl);
+    line-height: 1.05;
+    color: var(--bm-color-text-light);
+  }
+}
+
+.bm-juegos__hero-icono {
+  font-size: 40px;
+  color: var(--bm-color-primary);
+}
+
+.bm-juegos__hero-premio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  color: var(--bm-color-primary);
+  font-family: var(--bm-font-heading);
+  line-height: 0.95;
+}
+
+.bm-juegos__hero-pct {
+  font-size: clamp(2.5rem, 1.8rem + 4vw, 3rem);
+}
+
+.bm-juegos__hero-off {
+  font-size: var(--bm-font-size-md);
+  letter-spacing: 0.12em;
+}
+
+.bm-juegos__hero-texto {
+  margin: 0;
+  font-size: var(--bm-font-size-sm);
+  line-height: 1.45;
+  color: var(--bm-color-text-light);
+  opacity: 0.9;
+}
+
+.bm-juegos__reloj {
+  font-family: var(--bm-font-heading);
+  font-size: clamp(2.25rem, 1.6rem + 4vw, 2.75rem);
+  color: var(--bm-color-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+// ---- Cupón vigente --------------------------------------------------------
+
+.bm-juegos__cupon {
+  display: flex;
+  align-items: center;
+  gap: var(--bm-spacing-md);
+  padding: var(--bm-spacing-sm) var(--bm-spacing-md);
+  border: 2px dashed var(--bm-color-primary);
+  border-radius: var(--bm-radius-md);
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.bm-juegos__cupon-textos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bm-juegos__cupon-codigo {
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-lg);
+  letter-spacing: 0.06em;
+  color: var(--bm-color-primary);
+}
+
+.bm-juegos__cupon-pct {
+  padding: 4px 10px;
+  border-radius: var(--bm-radius-full);
+  background: var(--bm-color-primary);
+  color: var(--bm-color-primary-contrast);
+  font-weight: 700;
+  font-size: var(--bm-font-size-sm);
+}
+
+// ---- Lista de juego libre -------------------------------------------------
+
+.bm-juegos__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-sm);
+}
+
+.bm-juegos__fila {
+  display: flex;
+  align-items: center;
+  gap: var(--bm-spacing-sm);
+  padding: var(--bm-spacing-sm) var(--bm-spacing-md);
+  border-radius: var(--bm-radius-md);
+  background: rgba(58, 42, 28, 0.92);
+  box-shadow: var(--bm-shadow-md);
+  color: var(--bm-color-text-light);
+  text-decoration: none;
+}
+
+.bm-juegos__icono {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1.5px solid rgba(245, 164, 0, 0.5);
+  color: var(--bm-color-primary);
+  font-size: 24px;
+}
+
+.bm-juegos__fila-textos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bm-juegos__fila-nombre {
+  font-weight: 700;
+}
+
+.bm-juegos__fila-desc {
+  font-size: var(--bm-font-size-xs);
+  color: var(--bm-color-text-muted);
+}
+
+.bm-juegos__flecha {
+  flex-shrink: 0;
+  font-size: 20px;
+  color: var(--bm-color-primary);
+}

@@ -1,0 +1,85 @@
+<!-- MÓDULO 4 - Punto 15 - Frená el cronómetro. Ver comentario en el .ts -->
+<app-header-marca titulo="Cronómetro" [subtitulo]="subtitulo()" [backHref]="rutaVolver"></app-header-marca>
+
+<ion-content class="bm-fondo bm-fondo--alta">
+  <div class="bm-screen bm-crono">
+    @switch (fase()) {
+      <!-- ================= INTRO ================= -->
+      @case ('intro') {
+        <div class="bm-hero bm-crono__intro">
+          <span class="bm-eyebrow">{{ conPremio() ? 'Partida con premio' : 'Partida libre' }}</span>
+          <h1 class="bm-heading--lg bm-reveal">{{ info.nombre }}</h1>
+          @if (conPremio()) {
+            <span class="bm-crono__premio bm-pop">{{ info.porcentaje }}% OFF</span>
+          }
+          <p class="bm-caption">
+            Te damos un tiempo objetivo. Tocá iniciar y frená el reloj lo más cerca posible.
+            El reloj se oculta después del primer segundo. Ganás con un margen de ±{{ margenTexto }} s.
+            @if (conPremio()) {
+              <br /><strong>Tenés un solo intento por el descuento.</strong>
+            }
+          </p>
+        </div>
+
+        @if (aviso()) {
+          <p class="bm-crono__aviso bm-fade-in">{{ aviso() }}</p>
+        }
+
+        <div class="bm-screen__actions">
+          <ion-button expand="block" [disabled]="cargando()" (click)="empezar()">
+            {{ conPremio() ? 'Jugar por el descuento' : 'Empezar' }}
+          </ion-button>
+        </div>
+      }
+
+      <!-- ================= RESULTADO ================= -->
+      @case ('resultado') {
+        <app-resultado-juego
+          [gano]="gano()"
+          [conPremio]="partidaFueConPremio()"
+          [codigo]="codigo()"
+          [detalle]="detalleResultado()"
+          (jugarDeNuevo)="jugarDeNuevo()"
+        ></app-resultado-juego>
+      }
+
+      <!-- ================= JUGANDO (listo / corriendo / revelando) ================= -->
+      @default {
+        <div class="bm-crono__objetivo">
+          <span class="bm-eyebrow">Frená exactamente en</span>
+          <span class="bm-crono__objetivo-valor bm-pop">{{ objetivoTexto() }}s</span>
+          <span class="bm-caption">Margen permitido: ±{{ margenTexto }} s</span>
+        </div>
+
+        <div
+          class="bm-crono__dial"
+          [class.bm-crono__dial--corriendo]="fase() === 'corriendo'"
+          [class.bm-crono__dial--gano]="fase() === 'revelando' && gano()"
+          [class.bm-crono__dial--perdio]="fase() === 'revelando' && !gano()"
+          [class.bm-shake]="fase() === 'revelando' && !gano()"
+        >
+          <span class="bm-crono__valor">{{ textoReloj() }}</span>
+          <span class="bm-crono__estado">
+            @switch (fase()) {
+              @case ('listo') { Listo }
+              @case ('corriendo') { {{ relojOculto() ? 'Reloj oculto' : 'Corriendo' }} }
+              @case ('revelando') { {{ diferenciaTexto() }} }
+            }
+          </span>
+        </div>
+
+        <div class="bm-crono__boton-zona">
+          <button
+            type="button"
+            class="bm-crono__boton"
+            [class.bm-crono__boton--frenar]="fase() === 'corriendo'"
+            [disabled]="fase() === 'revelando'"
+            (click)="tocarBoton()"
+          >
+            {{ fase() === 'listo' ? 'INICIAR' : 'FRENAR' }}
+          </button>
+        </div>
+      }
+    }
+  </div>
+</ion-content>

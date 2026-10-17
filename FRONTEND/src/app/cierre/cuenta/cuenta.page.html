@@ -1,64 +1,255 @@
-<!-- MOCKUP VISUAL - Módulo 4, Punto 21. Ver comentario en el .ts -->
+<!-- MÓDULO 4 - Punto 21 - Tu cuenta. Ver comentario en el .ts -->
 <app-header-marca titulo="Tu cuenta" backHref="/sala/estado-pedido"></app-header-marca>
 
 <ion-content class="bm-fondo bm-fondo--alta">
-  <div class="bm-screen bm-cuenta">
-    <!-- ---- Hero: total grande ---- -->
-    <div class="bm-hero">
-      <span class="bm-eyebrow">Total a pagar</span>
-      <!-- Se recrea al cambiar el total (al elegir propina) → el monto nuevo "cae". -->
-      <span class="bm-cuenta__monto bm-flip-in" *ngFor="let t of [total]">${{ t | number: '1.0-0' }}</span>
-      <span class="bm-caption bm-fade" *ngIf="propinaSeleccionada">
-        Incluye ${{ montoPropina | number: '1.0-0' }} de propina ({{ propinaSeleccionada }}%)
-      </span>
-    </div>
-
-    <section class="bm-section bm-fade-in">
-      <h2 class="bm-section__title">Detalle del pedido</h2>
-      <div class="bm-card">
-        <div class="bm-card__body">
-          <div class="bm-cuenta__linea" *ngFor="let item of items">
-            <span>{{ item.cantidad }}× {{ item.nombre }}</span>
-            <span>${{ item.cantidad * item.precioUnitario | number: '1.0-0' }}</span>
+  @if (cuenta(); as c) {
+    <div class="bm-screen bm-cuenta" [class.bm-shake]="sacudir()">
+      @switch (c.estado) {
+        <!-- ================= 1. CONSUMIENDO ================= -->
+        @case ('consumiendo') {
+          <span class="bm-eyebrow">Tu consumo · Mesa {{ c.mesaNumero }}</span>
+          <div class="bm-card">
+            <div class="bm-card__body">
+              @for (item of c.items; track item.nombre) {
+                <div class="bm-cuenta__linea">
+                  <span>
+                    {{ item.cantidad }}× {{ item.nombre }}
+                    <small class="bm-cuenta__unitario">{{ pesos(item.precioUnitario) }} c/u</small>
+                  </span>
+                  <span>{{ pesos(item.cantidad * item.precioUnitario) }}</span>
+                </div>
+              }
+              <div class="bm-cuenta__linea bm-cuenta__linea--total">
+                <span>Subtotal</span>
+                <span>{{ pesos(importes()!.subtotal) }}</span>
+              </div>
+            </div>
           </div>
-          <div class="bm-cuenta__linea bm-cuenta__linea--subtotal">
-            <span class="bm-text-muted">Subtotal</span>
-            <span class="bm-text-price">${{ subtotal | number: '1.0-0' }}</span>
+          <p class="bm-caption bm-cuenta__ayuda">
+            Cuando pidas la cuenta, el mozo recibe un aviso y vas a poder elegir la propina escaneando un QR.
+          </p>
+          <div class="bm-screen__actions">
+            <ion-button expand="block" [disabled]="ocupado()" (click)="pedirCuenta()">Pedir la cuenta</ion-button>
           </div>
-        </div>
-      </div>
-    </section>
+        }
 
-    <section class="bm-section bm-fade-in">
-      <h2 class="bm-section__title">¿Querés dejar propina?</h2>
-      <div class="bm-propinas" role="radiogroup">
-        <button
-          class="bm-propina-btn"
-          role="radio"
-          [attr.aria-checked]="propinaSeleccionada === nivel"
-          [class.bm-propina-btn--activo]="propinaSeleccionada === nivel"
-          *ngFor="let nivel of nivelesPropina"
-          (click)="elegirPropina(nivel)"
-        >
-          {{ nivel }}%
-        </button>
-      </div>
-    </section>
+        <!-- ================= 2 y 3. PEDIDA ================= -->
+        @case ('pedida') {
+          @if (!propina()) {
+            <!-- 2. Falta el QR de propina -->
+            <div class="bm-hero bm-cuenta__hero">
+              <span class="bm-eyebrow">Cuenta pedida</span>
+              <h2 class="bm-cuenta__pregunta">¿Cómo te atendimos?</h2>
+              <p class="bm-caption">Escaneá el QR que está en la mesa según tu satisfacción.</p>
+            </div>
 
-    <div class="bm-qr-card bm-cuenta__qr" *ngIf="propinaSeleccionada !== null">
-      <h3 class="bm-heading--md">Escaneá para pagar</h3>
-      <img
-        src="https://placehold.co/400x400/FFFFFF/000000?text=QR+DE+PAGO"
-        class="bm-qr-card__image"
-        alt="QR para pagar la cuenta"
-      />
-      <p class="bm-caption">
-        El mozo confirma el pago del otro lado (Punto 22) y la mesa se libera sola.
-      </p>
+            <div class="bm-cuenta__visor" aria-hidden="true">
+              <ion-icon name="qr-code-outline"></ion-icon>
+              <span class="bm-cuenta__laser"></span>
+            </div>
+
+            <div class="bm-cuenta__niveles">
+              @for (n of niveles; track n.nivel) {
+                <span class="bm-cuenta__nivel">
+                  <strong>{{ n.porcentaje }}%</strong>
+                  {{ n.texto }}
+                </span>
+              }
+            </div>
+
+            @if (error()) {
+              <p class="bm-cuenta__error bm-fade-in">{{ error() }}</p>
+            }
+
+            <div class="bm-screen__actions">
+              <ion-button expand="block" [disabled]="ocupado()" (click)="escanearPropina()">
+                <ion-icon name="qr-code-outline" slot="start"></ion-icon>
+                Escanear QR de propina
+              </ion-button>
+            </div>
+          } @else {
+            <!-- 3. Detalle estilo Mercado Pago -->
+            <div class="bm-hero bm-cuenta__hero">
+              <span class="bm-eyebrow">Total a pagar</span>
+              @for (t of [importes()!.total]; track t) {
+                <span class="bm-cuenta__monto bm-flip-in">{{ pesos(t) }}</span>
+              }
+            </div>
+
+            <div class="bm-card">
+              <div class="bm-card__body">
+                @for (item of c.items; track item.nombre) {
+                  <div class="bm-cuenta__linea">
+                    <span>
+                      {{ item.cantidad }}× {{ item.nombre }}
+                      <small class="bm-cuenta__unitario">{{ pesos(item.precioUnitario) }} c/u</small>
+                    </span>
+                    <span>{{ pesos(item.cantidad * item.precioUnitario) }}</span>
+                  </div>
+                }
+                <div class="bm-cuenta__linea bm-cuenta__linea--separada">
+                  <span>Subtotal</span>
+                  <span>{{ pesos(importes()!.subtotal) }}</span>
+                </div>
+                @if (c.codigo; as cod) {
+                  <div class="bm-cuenta__linea bm-cuenta__linea--descuento">
+                    <span>
+                      Descuento juegos ({{ cod.porcentaje }}%)
+                      <small class="bm-cuenta__unitario">{{ cod.codigo }} · {{ juegoDelCodigo() }}</small>
+                    </span>
+                    <span>−{{ pesos(importes()!.descuento) }}</span>
+                  </div>
+                }
+                <div class="bm-cuenta__linea bm-cuenta__linea--propina">
+                  <span>Propina · {{ propina()!.texto }} ({{ propina()!.porcentaje }}%)</span>
+                  <span>+{{ pesos(importes()!.propina) }}</span>
+                </div>
+                <div class="bm-cuenta__linea bm-cuenta__linea--total">
+                  <span>Total</span>
+                  <span>{{ pesos(importes()!.total) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="bm-cuenta__link" [disabled]="ocupado()" (click)="escanearPropina()">
+              Cambiar propina (volver a escanear)
+            </button>
+
+            <!-- Código de descuento -->
+            <section class="bm-section">
+              <h2 class="bm-section__title">Código de descuento</h2>
+              @if (c.codigo; as cod) {
+                <div class="bm-cuenta__codigo-aplicado">
+                  <ion-icon name="checkmark"></ion-icon>
+                  <span><strong>{{ cod.codigo }}</strong> aplicado · {{ cod.porcentaje }}% OFF</span>
+                  <button type="button" class="bm-cuenta__link" (click)="quitarCodigo()">Quitar</button>
+                </div>
+              } @else {
+                <form class="bm-cuenta__codigo" (submit)="$event.preventDefault(); aplicarCodigo()">
+                  <input
+                    class="bm-cuenta__codigo-input"
+                    type="text"
+                    placeholder="MORFI-XXXX"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                    maxlength="12"
+                    [value]="textoCodigo()"
+                    (input)="escribirCodigo($any($event.target).value)"
+                  />
+                  <button type="submit" class="bm-cuenta__codigo-btn" [disabled]="!textoCodigo().trim()">Aplicar</button>
+                </form>
+                @if (errorCodigo()) {
+                  <p class="bm-cuenta__error bm-fade-in">{{ errorCodigo() }}</p>
+                }
+              }
+              <button type="button" class="bm-cuenta__link bm-cuenta__mis-codigos" (click)="abrirMisCodigos()">
+                <ion-icon name="pricetag-outline"></ion-icon>
+                Ver mis códigos
+              </button>
+            </section>
+
+            @if (error()) {
+              <p class="bm-cuenta__error bm-fade-in">{{ error() }}</p>
+            }
+
+            <div class="bm-screen__actions">
+              <ion-button expand="block" [disabled]="ocupado()" (click)="pagar()">
+                Pagar {{ pesos(importes()!.total) }}
+              </ion-button>
+            </div>
+          }
+        }
+
+        <!-- ================= 4. PAGADA: esperando al mozo ================= -->
+        @case ('pagada') {
+          <div class="bm-hero bm-cuenta__hero">
+            <span class="bm-cuenta__spinner" aria-hidden="true"></span>
+            <h2 class="bm-cuenta__pregunta">Pago enviado</h2>
+            <p class="bm-caption">El mozo tiene que confirmarlo. No cierres la app.</p>
+          </div>
+          <div class="bm-card">
+            <div class="bm-card__body bm-cuenta__pasos">
+              <div class="bm-cuenta__paso"><span class="bm-cuenta__tilde">✓</span>Cuenta pedida</div>
+              <div class="bm-cuenta__paso"><span class="bm-cuenta__tilde">✓</span>Propina elegida · {{ propina()?.texto }}</div>
+              <div class="bm-cuenta__paso">
+                <span class="bm-cuenta__tilde">✓</span>Pago enviado · {{ pesos(importes()!.total) }}
+              </div>
+              <div class="bm-cuenta__paso">
+                <span class="bm-cuenta__tilde bm-cuenta__tilde--pendiente"></span>Confirmación del mozo
+              </div>
+            </div>
+          </div>
+          <div class="bm-screen__actions">
+            <ion-button expand="block" fill="outline" routerLink="/cierre/encuesta/resultados">
+              Ver resultados de encuestas
+            </ion-button>
+          </div>
+        }
+
+        <!-- ================= 5. CONFIRMADA ================= -->
+        @case ('confirmada') {
+          <div class="bm-hero bm-cuenta__hero bm-cuenta__hero--ok">
+            <app-check-animado></app-check-animado>
+            <h2 class="bm-cuenta__pregunta bm-reveal">¡Gracias por venir!</h2>
+            <p class="bm-caption">
+              El mozo confirmó tu pago de {{ pesos(importes()!.total) }}. La mesa {{ c.mesaNumero }} quedó libre.
+            </p>
+          </div>
+          <div class="bm-screen__actions">
+            <ion-button expand="block" routerLink="/cierre/encuesta/resultados">Ver resultados de encuestas</ion-button>
+            <ion-button expand="block" fill="outline" routerLink="/home">Volver al inicio</ion-button>
+          </div>
+        }
+      }
     </div>
-  </div>
+  }
 </ion-content>
 
 <ion-footer>
   <app-nav-cliente></app-nav-cliente>
 </ion-footer>
+
+<!-- ================= MIS CÓDIGOS (panel desde abajo) ================= -->
+@if (verCodigos()) {
+  <div class="bm-cuenta__velo bm-fade-in" (click)="cerrarMisCodigos()"></div>
+  <section class="bm-cuenta__panel bm-slide-up" role="dialog" aria-label="Mis códigos de descuento">
+    <div class="bm-cuenta__panel-cabecera">
+      <h2>Mis códigos</h2>
+      <button type="button" class="bm-cuenta__cerrar" aria-label="Cerrar" (click)="cerrarMisCodigos()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    @if (misCodigos().length === 0) {
+      <div class="bm-cuenta__vacio">
+        <ion-icon name="pricetag-outline"></ion-icon>
+        <p>Todavía no ganaste códigos de descuento.</p>
+        <ion-button fill="outline" routerLink="/cierre/juegos" (click)="cerrarMisCodigos()">Ir a Juegos</ion-button>
+      </div>
+    } @else {
+      <p class="bm-caption">Escribí el código vigente en "Código de descuento" para aplicarlo.</p>
+      <div class="bm-cuenta__lista-codigos">
+        @for (cod of misCodigos(); track cod.codigo) {
+          <div class="bm-cuenta__mi-codigo" [class.bm-cuenta__mi-codigo--apagado]="cod.estado !== 'vigente'">
+            <div>
+              <span class="bm-cuenta__mi-codigo-texto">{{ cod.codigo }}</span>
+              <span class="bm-caption">{{ cod.porcentaje }}% OFF · {{ nombreJuego(cod) }}</span>
+            </div>
+            @switch (cod.estado) {
+              @case ('vigente') {
+                <span class="bm-cuenta__estado bm-cuenta__estado--vigente">Vence en {{ venceEn(cod) }}</span>
+              }
+              @case ('usado') {
+                <span class="bm-cuenta__estado">Usado</span>
+              }
+              @case ('vencido') {
+                <span class="bm-cuenta__estado">Vencido</span>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+  </section>
+}

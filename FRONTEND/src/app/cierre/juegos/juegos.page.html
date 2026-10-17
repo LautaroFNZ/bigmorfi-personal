@@ -1,0 +1,83 @@
+<!-- MÓDULO 4 - Punto 15 - Sección Juegos. Ver comentario en el .ts -->
+<app-header-marca titulo="Juegos" backHref="/home"></app-header-marca>
+
+<ion-content class="bm-fondo bm-fondo--alta">
+  <div class="bm-screen bm-juegos">
+    @if (estado(); as e) {
+      <!-- ================= TARJETA PRINCIPAL ================= -->
+      @if (e.intentoDisponible) {
+        @if (juegoDelDia(); as j) {
+          <section class="bm-juegos__hero bm-scale-in">
+            <span class="bm-juegos__chip">
+              <ion-icon name="star"></ion-icon>
+              Juego del día · con premio
+            </span>
+
+            <div class="bm-juegos__hero-fila">
+              <div class="bm-juegos__hero-nombre">
+                <ion-icon class="bm-juegos__hero-icono" [name]="j.icono"></ion-icon>
+                <h1>{{ j.nombre }}</h1>
+              </div>
+              <div class="bm-juegos__hero-premio">
+                <span class="bm-juegos__hero-pct">{{ j.porcentaje }}%</span>
+                <span class="bm-juegos__hero-off">OFF</span>
+              </div>
+            </div>
+
+            <p class="bm-juegos__hero-texto">
+              {{ j.descripcion }}. Tenés <strong>un solo intento</strong> por el descuento.
+            </p>
+
+            <ion-button expand="block" [routerLink]="j.ruta" [queryParams]="{ modo: 'premio' }">
+              Jugar por el descuento
+            </ion-button>
+          </section>
+        }
+      } @else {
+        <section class="bm-juegos__hero bm-juegos__hero--espera bm-scale-in">
+          <span class="bm-eyebrow">Próximo intento con premio en</span>
+          <span class="bm-juegos__reloj">{{ cuentaRegresiva() }}</span>
+          @if (juegoDelDia(); as j) {
+            <p class="bm-juegos__hero-texto">
+              Te va a tocar <strong>{{ j.nombre }} · {{ j.porcentaje }}% OFF</strong>.
+              Mientras tanto podés jugar libre.
+            </p>
+          }
+        </section>
+      }
+
+      <!-- ================= CUPÓN VIGENTE ================= -->
+      @if (e.codigoActivo; as c) {
+        <section class="bm-section bm-fade-in">
+          <h2 class="bm-section__title">Tu descuento</h2>
+          <div class="bm-juegos__cupon">
+            <div class="bm-juegos__cupon-textos">
+              <span class="bm-juegos__cupon-codigo">{{ c.codigo }}</span>
+              <span class="bm-caption">
+                {{ c.porcentaje }}% OFF · vence en <strong class="bm-juegos__num">{{ vencimientoCodigo() }}</strong>
+              </span>
+            </div>
+            <span class="bm-juegos__cupon-pct">{{ c.porcentaje }}%</span>
+          </div>
+        </section>
+      }
+
+      <!-- ================= JUEGO LIBRE ================= -->
+      <section class="bm-section">
+        <h2 class="bm-section__title">Jugá libre · sin premio</h2>
+        <div class="bm-juegos__lista bm-stagger">
+        @for (j of juegosLibres(); track j.id) {
+            <a class="bm-juegos__fila bm-press" [routerLink]="j.ruta">
+              <span class="bm-juegos__icono"><ion-icon [name]="j.icono"></ion-icon></span>
+              <span class="bm-juegos__fila-textos">
+                <span class="bm-juegos__fila-nombre">{{ j.nombre }}</span>
+                <span class="bm-juegos__fila-desc">{{ j.descripcion }}</span>
+              </span>
+              <ion-icon class="bm-juegos__flecha" name="chevron-forward"></ion-icon>
+            </a>
+          }
+        </div>
+      </section>
+    }
+  </div>
+</ion-content>

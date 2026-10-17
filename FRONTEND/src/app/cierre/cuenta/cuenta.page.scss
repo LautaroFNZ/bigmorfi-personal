@@ -1,7 +1,29 @@
-// MOCKUP VISUAL - Módulo 4, Punto 21.
+// MÓDULO 4 - Punto 21 - Tu cuenta.
 
 .bm-cuenta {
-  gap: var(--bm-spacing-lg);
+  gap: var(--bm-spacing-md);
+}
+
+.bm-cuenta__ayuda {
+  margin: 0;
+  text-align: center;
+}
+
+// ---- Hero (estado / total) ------------------------------------------------
+
+.bm-cuenta__hero {
+  text-align: center;
+
+  &--ok {
+    border-color: var(--bm-color-success);
+  }
+}
+
+.bm-cuenta__pregunta {
+  margin: 0;
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-xl);
+  color: var(--bm-color-text-light);
 }
 
 .bm-cuenta__monto {
@@ -9,82 +31,375 @@
   color: var(--bm-color-primary);
   font-size: clamp(2.25rem, 1.4rem + 4vw, 3rem);
   line-height: 1.05;
+  font-variant-numeric: tabular-nums;
 }
+
+// ---- Detalle --------------------------------------------------------------
 
 .bm-cuenta__linea {
   display: flex;
   justify-content: space-between;
   gap: var(--bm-spacing-md);
+  padding: 4px 0;
 
   span:last-child {
     flex-shrink: 0;
     font-variant-numeric: tabular-nums;
   }
 
-  &--subtotal {
-    align-items: center;
+  &--separada {
+    margin-top: var(--bm-spacing-xs);
     padding-top: var(--bm-spacing-sm);
     border-top: 1px solid rgba(245, 164, 0, 0.25);
-    font-weight: 600;
+  }
+
+  &--descuento span:last-child {
+    color: #8fd18a;
+    font-weight: 700;
+  }
+
+  &--propina span:last-child {
+    color: var(--bm-color-primary);
+    font-weight: 700;
+  }
+
+  &--total {
+    margin-top: var(--bm-spacing-xs);
+    padding-top: var(--bm-spacing-sm);
+    border-top: 1px solid rgba(245, 164, 0, 0.25);
+    font-weight: 700;
   }
 }
 
-// Grilla de propina: 5 botones parejos que llenan el ancho, cuadrados y
-// con área táctil de sobra incluso en 320px.
-.bm-propinas {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: var(--bm-spacing-sm);
+.bm-cuenta__unitario {
+  display: block;
+  font-size: var(--bm-font-size-xs);
+  color: var(--bm-color-text-muted);
 }
 
-.bm-propina-btn {
+.bm-cuenta__link {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--bm-spacing-xs);
+  border: none;
+  background: none;
+  color: var(--bm-color-primary);
+  font-family: var(--bm-font-body);
+  font-size: var(--bm-font-size-sm);
+  font-weight: 700;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.bm-cuenta__error {
+  margin: 0;
+  text-align: center;
+  font-size: var(--bm-font-size-sm);
+  color: var(--bm-color-danger);
+}
+
+// ---- QR de propina --------------------------------------------------------
+
+.bm-cuenta__visor {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: 18px;
+  border: 3px solid var(--bm-color-primary);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 1 / 1;
-  min-height: var(--bm-touch-min);
-  border-radius: var(--bm-radius-md);
-  border: 2px solid var(--bm-color-primary);
-  background: rgba(0, 0, 0, 0.45);
-  color: var(--bm-color-primary);
+  overflow: hidden;
+
+  ion-icon {
+    font-size: 110px;
+    color: rgba(245, 164, 0, 0.3);
+  }
+}
+
+@keyframes bm-cuenta-laser {
+  0%,
+  100% {
+    transform: translateY(-70px);
+  }
+  50% {
+    transform: translateY(70px);
+  }
+}
+
+.bm-cuenta__laser {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  background: var(--bm-color-primary);
+  box-shadow: 0 0 12px var(--bm-color-primary);
+  animation: bm-cuenta-laser 2.4s ease-in-out infinite;
+}
+
+.bm-cuenta__niveles {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.bm-cuenta__nivel {
+  padding: 6px 2px;
+  border-radius: 8px;
+  border: 1px solid rgba(245, 164, 0, 0.25);
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--bm-color-text-muted);
+
+  strong {
+    display: block;
+    font-size: var(--bm-font-size-sm);
+    color: var(--bm-color-text-light);
+  }
+}
+
+// ---- Código de descuento --------------------------------------------------
+
+.bm-cuenta__codigo {
+  display: flex;
+  gap: var(--bm-spacing-xs);
+}
+
+.bm-cuenta__codigo-input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 var(--bm-spacing-sm);
+  border-radius: 12px;
+  border: 1px solid rgba(245, 164, 0, 0.4);
+  background: #000;
+  color: var(--bm-color-text-light);
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-md); // 16px: evita el zoom automático de iOS
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  outline: none;
+
+  &:focus {
+    border-color: var(--bm-color-primary);
+  }
+
+  &::placeholder {
+    color: var(--bm-color-text-muted);
+    opacity: 0.6;
+  }
+}
+
+.bm-cuenta__codigo-btn {
+  padding: 0 var(--bm-spacing-md);
+  border: none;
+  border-radius: 12px;
+  background: var(--bm-color-primary);
+  color: var(--bm-color-primary-contrast);
   font-family: var(--bm-font-body);
   font-weight: 700;
-  font-size: var(--bm-font-size-md);
+  font-size: var(--bm-font-size-sm);
+  text-transform: uppercase;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition:
-    background-color var(--bm-duration-base) var(--bm-ease-standard),
-    color var(--bm-duration-base) var(--bm-ease-standard),
-    transform var(--bm-duration-fast) var(--bm-ease-out);
 
-  &:active {
-    transform: scale(0.94);
-  }
-
-  &--activo {
-    background: var(--bm-color-primary);
-    color: var(--bm-color-primary-contrast);
-    animation: bm-pop var(--bm-duration-base) var(--bm-ease-spring);
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
   }
 }
 
-// El QR de pago se "despliega" al elegir la propina: entra girado y chico
-// y se endereza con rebote (se nota que apareció algo para escanear).
-@keyframes bm-qr-in {
-  0% {
-    opacity: 0;
-    transform: rotate(-10deg) scale(0.6);
+.bm-cuenta__codigo-aplicado {
+  display: flex;
+  align-items: center;
+  gap: var(--bm-spacing-xs);
+  padding: var(--bm-spacing-xs) var(--bm-spacing-sm);
+  border-radius: 12px;
+  border: 1.5px solid var(--bm-color-success);
+  background: rgba(91, 153, 80, 0.2);
+  color: var(--bm-color-text-light);
+  font-size: var(--bm-font-size-sm);
+
+  ion-icon {
+    color: #8fd18a;
+    font-size: 20px;
   }
-  70% {
-    opacity: 1;
-    transform: rotate(2deg) scale(1.03);
-  }
-  100% {
-    opacity: 1;
-    transform: none;
+
+  span {
+    flex: 1;
   }
 }
 
-.bm-cuenta__qr .bm-qr-card__image {
-  animation: bm-qr-in 560ms var(--bm-ease-out) 120ms both;
+.bm-cuenta__mis-codigos {
+  margin-top: var(--bm-spacing-xs);
+}
+
+// ---- Esperando al mozo ----------------------------------------------------
+
+@keyframes bm-cuenta-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bm-cuenta__spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 5px solid rgba(245, 164, 0, 0.2);
+  border-top-color: var(--bm-color-primary);
+  animation: bm-cuenta-giro 1s linear infinite;
+}
+
+.bm-cuenta__pasos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-sm);
+}
+
+.bm-cuenta__paso {
+  display: flex;
+  align-items: center;
+  gap: var(--bm-spacing-sm);
+  color: var(--bm-color-text-light);
+  font-size: var(--bm-font-size-sm);
+}
+
+.bm-cuenta__tilde {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bm-color-success);
+  color: #fff;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &--pendiente {
+    background: transparent;
+    border: 2px solid var(--bm-color-primary);
+  }
+}
+
+// ---- Panel "Mis códigos" --------------------------------------------------
+
+.bm-cuenta__velo {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.bm-cuenta__panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 101;
+  max-height: 75vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-sm);
+  padding: var(--bm-spacing-md) var(--bm-spacing-md) calc(var(--bm-spacing-lg) + var(--bm-safe-bottom));
+  border-top: 2px solid var(--bm-color-primary);
+  border-radius: 22px 22px 0 0;
+  background: var(--bm-color-background);
+}
+
+.bm-cuenta__panel-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h2 {
+    margin: 0;
+    font-family: var(--bm-font-heading);
+    font-size: var(--bm-font-size-lg);
+    color: var(--bm-color-text-light);
+  }
+}
+
+.bm-cuenta__cerrar {
+  width: var(--bm-touch-min);
+  height: var(--bm-touch-min);
+  border: none;
+  background: none;
+  color: var(--bm-color-primary);
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.bm-cuenta__vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--bm-spacing-sm);
+  padding: var(--bm-spacing-lg) 0;
+  text-align: center;
+  color: var(--bm-color-text-muted);
+
+  ion-icon {
+    font-size: 40px;
+    color: var(--bm-color-primary);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.bm-cuenta__lista-codigos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-xs);
+}
+
+.bm-cuenta__mi-codigo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bm-spacing-sm);
+  padding: var(--bm-spacing-sm);
+  border-radius: 12px;
+  border: 2px dashed var(--bm-color-primary);
+  background: rgba(0, 0, 0, 0.45);
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &--apagado {
+    border-color: rgba(245, 164, 0, 0.25);
+    opacity: 0.6;
+  }
+}
+
+.bm-cuenta__mi-codigo-texto {
+  font-family: var(--bm-font-heading);
+  letter-spacing: 0.08em;
+  color: var(--bm-color-primary);
+}
+
+.bm-cuenta__estado {
+  flex-shrink: 0;
+  font-size: var(--bm-font-size-xs);
+  font-weight: 700;
+  color: var(--bm-color-text-muted);
+
+  &--vigente {
+    color: #8fd18a;
+    font-variant-numeric: tabular-nums;
+  }
 }

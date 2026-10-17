@@ -1,37 +1,88 @@
-// MOCKUP VISUAL - Módulo 4, Punto 20.
+// MÓDULO 4 - Punto 20 - Encuesta de satisfacción (paso a paso).
 
 .bm-encuesta {
-  gap: var(--bm-spacing-lg);
+  gap: var(--bm-spacing-md);
 }
 
-.bm-encuesta__intro {
+// ---- Progreso -------------------------------------------------------------
+
+.bm-encuesta__progreso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bm-encuesta__porcentaje {
+  font-weight: 700;
+  font-size: var(--bm-font-size-sm);
+  color: var(--bm-color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.bm-encuesta__barra {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(245, 164, 0, 0.2);
+  overflow: hidden;
+}
+
+.bm-encuesta__barra-relleno {
+  height: 100%;
+  background: var(--bm-color-primary);
+  transform-origin: left center;
+  transition: transform var(--bm-duration-slow) var(--bm-ease-out);
+}
+
+// ---- Pregunta -------------------------------------------------------------
+
+.bm-encuesta__paso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-md);
+}
+
+.bm-encuesta__pregunta {
+  margin: var(--bm-spacing-md) 0 0;
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-xl);
+  line-height: 1.15;
   text-align: center;
-
-  h1,
-  p {
-    margin: 0 0 var(--bm-spacing-xs);
-  }
+  color: var(--bm-color-text-light);
 }
 
-// Estrellas: cada una es un botón de 44px (área táctil cómoda) aunque el
-// ícono se vea un poco más chico. Al marcarla, rebota.
+.bm-encuesta__ayuda {
+  margin: calc(var(--bm-spacing-sm) * -1) 0 0;
+  text-align: center;
+  font-size: var(--bm-font-size-sm);
+  color: var(--bm-color-text-muted);
+}
+
+.bm-encuesta__control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-xs);
+  padding: var(--bm-spacing-md);
+}
+
+// ---- 1. Estrellas ---------------------------------------------------------
+
 .bm-estrellas {
   display: flex;
   justify-content: center;
-  gap: 2px;
+  gap: 4px;
 }
 
 .bm-estrella {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--bm-touch-min);
-  height: var(--bm-touch-min);
+  width: 52px;
+  height: 52px;
   padding: 0;
   border: none;
   background: transparent;
   color: var(--bm-color-primary);
-  font-size: 32px;
+  font-size: 40px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: transform var(--bm-duration-fast) var(--bm-ease-out);
@@ -40,51 +91,180 @@
     transform: scale(0.88);
   }
 
-  // Al marcarla, la estrella "salta" con un giro chiquito.
   &--activa ion-icon {
     animation: bm-pop-rot var(--bm-duration-slow) var(--bm-ease-spring);
   }
 }
 
-// El texto de agradecimiento aparece cuando el check terminó de dibujarse.
-.bm-encuesta__gracias {
-  animation-delay: 650ms;
+// ---- 2. Deslizador --------------------------------------------------------
+
+.bm-encuesta__valor {
+  align-self: center;
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-xxl);
+  color: var(--bm-color-primary);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
-.bm-barra {
-  margin-bottom: 14px;
+.bm-encuesta__range {
+  --bar-background: rgba(245, 164, 0, 0.25);
+  --bar-background-active: var(--bm-color-primary);
+  --bar-height: 4px;
+  --bar-border-radius: 2px;
+  --knob-background: var(--bm-color-primary);
+  --knob-size: 24px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
 
-  &:last-child {
-    margin-bottom: 0;
+.bm-encuesta__extremos {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--bm-font-size-xs);
+  color: var(--bm-color-text-muted);
+}
+
+// ---- 3. Opciones múltiples ------------------------------------------------
+
+.bm-encuesta__opciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-sm);
+}
+
+.bm-encuesta__opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--bm-spacing-sm);
+  min-height: var(--bm-touch-min);
+  padding: var(--bm-spacing-sm) var(--bm-spacing-md);
+  border-radius: var(--bm-radius-md);
+  border: 1.5px solid rgba(245, 164, 0, 0.35);
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--bm-color-text-light);
+  font-family: var(--bm-font-body);
+  font-size: var(--bm-font-size-md);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--bm-duration-base) var(--bm-ease-standard),
+    border-color var(--bm-duration-base) var(--bm-ease-standard),
+    transform var(--bm-duration-fast) var(--bm-ease-out);
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &--activa {
+    border-color: var(--bm-color-primary);
+    background: rgba(245, 164, 0, 0.15);
   }
 }
 
-.bm-barra__header {
+.bm-encuesta__casilla {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--bm-color-primary);
   display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--bm-spacing-xs);
-  font-size: var(--bm-font-size-sm);
+  align-items: center;
+  justify-content: center;
+  color: var(--bm-color-primary-contrast);
+  font-size: 16px;
+
+  .bm-encuesta__opcion--activa & {
+    background: var(--bm-color-primary);
+  }
 }
 
-.bm-barra__pista {
-  height: 10px;
-  border-radius: var(--bm-radius-full);
-  background: var(--bm-color-surface-dark);
+// ---- 4. Opción única (segmento) -------------------------------------------
+
+.bm-encuesta__segmento {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1.5px solid var(--bm-color-primary);
+  border-radius: var(--bm-radius-md);
   overflow: hidden;
 }
 
-// La barra se llena con transform (escala desde la izquierda): animarla
-// no recalcula el layout.
-@keyframes bm-barra-llenar {
-  from {
-    transform: scaleX(0);
+.bm-encuesta__segmento-btn {
+  min-height: 52px;
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--bm-color-primary);
+  font-family: var(--bm-font-body);
+  font-size: var(--bm-font-size-md);
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--bm-duration-base) var(--bm-ease-standard),
+    color var(--bm-duration-base) var(--bm-ease-standard);
+
+  & + & {
+    border-left: 1.5px solid var(--bm-color-primary);
+  }
+
+  &--activo {
+    background: var(--bm-color-primary);
+    color: var(--bm-color-primary-contrast);
   }
 }
 
-.bm-barra__relleno {
-  height: 100%;
-  background: var(--bm-color-primary);
-  border-radius: var(--bm-radius-full);
-  transform-origin: left center;
-  animation: bm-barra-llenar 600ms var(--bm-ease-out) 200ms both;
+// ---- 5. Interruptor -------------------------------------------------------
+
+.bm-encuesta__interruptor {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--bm-color-text-light);
+
+  ion-toggle {
+    --track-background: rgba(245, 164, 0, 0.25);
+    --track-background-checked: var(--bm-color-primary);
+    --handle-background: var(--bm-color-text-light);
+    --handle-background-checked: var(--bm-color-primary-contrast);
+  }
 }
+
+// ---- Acciones y estados ---------------------------------------------------
+
+.bm-encuesta__error {
+  margin: 0;
+  text-align: center;
+  font-size: var(--bm-font-size-sm);
+  color: var(--bm-color-danger);
+}
+
+.bm-encuesta__acciones {
+  display: flex;
+  gap: var(--bm-spacing-sm);
+  margin-top: auto;
+
+  ion-button {
+    margin: 0;
+  }
+}
+
+.bm-encuesta__atras {
+  flex: 1;
+}
+
+.bm-encuesta__siguiente {
+  flex: 2;
+}
+
+.bm-encuesta__fin {
+  text-align: center;
+  margin-top: var(--bm-spacing-lg);
+}
+
+// El texto de agradecimiento aparece cuando el check terminó de dibujarse.
+.bm-encuesta__gracias {
+  animation-delay: 650ms;
+} 

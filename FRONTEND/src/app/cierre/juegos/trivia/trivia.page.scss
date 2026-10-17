@@ -1,0 +1,186 @@
+// MÓDULO 4 - Punto 15 - Trivia gastronómica.
+
+.bm-trivia {
+  gap: var(--bm-spacing-md);
+}
+
+// ---- Intro ----------------------------------------------------------------
+
+.bm-trivia__intro {
+  text-align: center;
+}
+
+.bm-trivia__premio {
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-xxl);
+  color: var(--bm-color-primary);
+  line-height: 1;
+}
+
+.bm-trivia__aviso {
+  margin: 0;
+  padding: var(--bm-spacing-sm) var(--bm-spacing-md);
+  border-radius: var(--bm-radius-md);
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(245, 164, 0, 0.4);
+  color: var(--bm-color-text-light);
+  font-size: var(--bm-font-size-sm);
+  text-align: center;
+}
+
+// ---- Progreso (pregunta X de 3) -------------------------------------------
+
+.bm-trivia__progreso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bm-trivia__pasos {
+  display: flex;
+  gap: 6px;
+}
+
+.bm-trivia__paso {
+  width: 32px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(245, 164, 0, 0.22);
+  transition: background-color var(--bm-duration-base) var(--bm-ease-standard);
+
+  &--ok {
+    background: var(--bm-color-success);
+  }
+
+  &--actual {
+    background: var(--bm-color-primary);
+  }
+}
+
+// ---- Barra de tiempo ------------------------------------------------------
+
+.bm-trivia__tiempo {
+  display: flex;
+  align-items: center;
+  gap: var(--bm-spacing-sm);
+}
+
+.bm-trivia__tiempo-pista {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+// Se achica con scaleX (lo resuelve la GPU, no recalcula el layout).
+.bm-trivia__tiempo-relleno {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--bm-color-primary);
+  transform-origin: left center;
+  transition:
+    transform 100ms linear,
+    background-color var(--bm-duration-base) var(--bm-ease-standard);
+}
+
+.bm-trivia__segundos {
+  min-width: 2.5em;
+  text-align: right;
+  font-weight: 700;
+  font-size: var(--bm-font-size-sm);
+  color: var(--bm-color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.bm-trivia__tiempo--alerta {
+  .bm-trivia__tiempo-relleno {
+    background: var(--bm-color-danger);
+  }
+
+  .bm-trivia__segundos {
+    color: var(--bm-color-danger);
+  }
+}
+
+// ---- Pregunta y opciones --------------------------------------------------
+
+.bm-trivia__pregunta p {
+  margin: 0;
+  padding: var(--bm-spacing-md);
+  font-weight: 700;
+  font-size: var(--bm-font-size-lg);
+  line-height: 1.35;
+  color: var(--bm-color-text-light);
+}
+
+.bm-trivia__opciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-sm);
+}
+
+.bm-trivia__opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--bm-spacing-sm);
+  width: 100%;
+  min-height: var(--bm-touch-min);
+  padding: var(--bm-spacing-sm) var(--bm-spacing-md);
+  border-radius: var(--bm-radius-md);
+  border: 1.5px solid rgba(245, 164, 0, 0.35);
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--bm-color-text-light);
+  font-family: var(--bm-font-body);
+  font-size: var(--bm-font-size-md);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--bm-duration-base) var(--bm-ease-standard),
+    border-color var(--bm-duration-base) var(--bm-ease-standard),
+    transform var(--bm-duration-fast) var(--bm-ease-out);
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &--correcta {
+    border-color: var(--bm-color-success);
+    background: rgba(91, 153, 80, 0.3);
+
+    .bm-trivia__letra {
+      background: var(--bm-color-success);
+      color: #fff;
+    }
+  }
+
+  &--incorrecta {
+    border-color: var(--bm-color-danger);
+    background: rgba(232, 67, 58, 0.25);
+
+    .bm-trivia__letra {
+      background: var(--bm-color-danger);
+      color: #fff;
+    }
+  }
+}
+
+.bm-trivia__letra {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 164, 0, 0.15);
+  color: var(--bm-color-primary);
+  font-size: var(--bm-font-size-xs);
+  font-weight: 700;
+}

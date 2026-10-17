@@ -1,0 +1,106 @@
+// Resultado compartido de los juegos del Módulo 4.
+
+.bm-resultado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--bm-spacing-md);
+  text-align: center;
+  padding-top: var(--bm-spacing-lg);
+}
+
+.bm-resultado__titulo {
+  margin: 0;
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-xxl);
+  color: var(--bm-color-primary);
+  line-height: 1.05;
+
+  &--perdio {
+    color: var(--bm-color-text-light);
+  }
+}
+
+.bm-resultado__detalle {
+  margin: 0;
+  color: var(--bm-color-text-light);
+}
+
+// Cupón amarillo con muescas a los costados y línea punteada (tipo ticket).
+.bm-cupon {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--bm-spacing-xs);
+  padding: var(--bm-spacing-lg) var(--bm-spacing-md);
+  border-radius: var(--bm-radius-lg);
+  background: var(--bm-color-primary);
+  color: var(--bm-color-primary-contrast);
+  box-shadow: var(--bm-shadow-lg);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 62%;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bm-color-background);
+  }
+
+  &::before {
+    left: -13px;
+  }
+
+  &::after {
+    right: -13px;
+  }
+}
+
+.bm-cupon__rotulo {
+  color: var(--bm-color-primary-contrast);
+  opacity: 0.7;
+}
+
+.bm-cupon__porcentaje {
+  font-family: var(--bm-font-heading);
+  font-size: clamp(2.5rem, 1.6rem + 5vw, 3.25rem);
+  line-height: 1;
+}
+
+.bm-cupon__codigo {
+  width: 100%;
+  margin-top: var(--bm-spacing-sm);
+  padding-top: var(--bm-spacing-md);
+  border-top: 2px dashed rgba(20, 13, 8, 0.4);
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-xl);
+  letter-spacing: 0.1em;
+}
+
+.bm-resultado__vence {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--bm-spacing-md);
+}
+
+.bm-resultado__reloj {
+  font-family: var(--bm-font-heading);
+  font-size: var(--bm-font-size-xl);
+  color: var(--bm-color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.bm-resultado__acciones {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bm-spacing-xs);
+  margin-top: var(--bm-spacing-sm);
+}
